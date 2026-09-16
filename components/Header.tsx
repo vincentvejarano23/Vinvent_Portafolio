@@ -1,11 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
-import { Logo } from './Logo';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { MenuIcon } from './icons/MenuIcon';
 import { XIcon } from './icons/XIcon';
 
-// HACK: Workaround for framer-motion type errors.
 const m = motion as any;
 
 interface HeaderProps {
@@ -13,110 +10,58 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ scrollTo }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto'; // Cleanup on component unmount
-    };
-  }, [isMenuOpen]);
 
-  const navLinks = [
-    { id: 'sobre-mi', label: 'Sobre mí' },
-    { id: 'ilustraciones', label: 'Ilustraciones' },
-    { id: 'proyectos', label: 'Proyectos' },
-    { id: 'contacto', label: 'Contacto' },
+  const links = [
+    ['sobre-mi', 'Sobre mí'],
+    ['proyectos', 'Proyectos'],
+    ['ilustraciones', 'Ilustración'],
+    ['contacto', 'Contacto'],
   ];
-  
-  const handleLinkClick = (id: string) => {
+
+  const go = (id: string) => {
     scrollTo(id);
-    setIsMenuOpen(false);
-  }
+    setOpen(false);
+  };
 
   return (
-    <header
-      className={`sticky top-0 left-0 right-0 z-50 transition-colors duration-300 ease-in-out ${
-        isScrolled
-          ? 'bg-[#101411]/80 backdrop-blur-sm shadow-lg shadow-lime-500/10'
-          : 'bg-transparent'
-      }`}
-    >
-      <nav className="container mx-auto px-6 py-3 flex justify-between items-center">
-        <div 
-          className="cursor-pointer" 
-          onClick={() => scrollTo('hero')}
-          data-interactive="true"
-        >
-          <Logo className="h-16 w-auto text-gray-200" />
-        </div>
-        
-        {/* Desktop Nav */}
-        <ul className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link) => (
-            <li key={link.id}>
-              <button
-                onClick={() => scrollTo(link.id)}
-                className="text-gray-300 hover:text-lime-400 transition-colors duration-300 font-medium"
-                data-interactive="true"
-              >
-                {link.label}
-              </button>
-            </li>
-          ))}
-        </ul>
+    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? 'border-b border-white/10 bg-[#0b0e0c]/85 backdrop-blur-xl' : 'bg-transparent'}`}>
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <button onClick={() => go('hero')} className="group flex items-center gap-3 text-left">
+          <span className="grid h-9 w-9 place-items-center rounded-full border border-lime-300/40 text-sm font-black text-lime-300 transition group-hover:bg-lime-300 group-hover:text-black">V</span>
+          <span className="hidden text-sm font-bold tracking-[0.18em] text-white/85 sm:block">VINCENT</span>
+        </button>
 
-        {/* Mobile Nav Trigger */}
-        <div className="md:hidden">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-gray-300 hover:text-lime-400 transition-colors z-[110] relative"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            data-interactive="true"
-          >
-            {isMenuOpen ? <XIcon className="w-8 h-8" /> : <MenuIcon className="w-8 h-8" />}
+        <div className="hidden items-center gap-7 md:flex">
+          {links.map(([id, label]) => (
+            <button key={id} onClick={() => go(id)} className="text-sm text-white/55 transition hover:text-white">{label}</button>
+          ))}
+          <button onClick={() => go('contacto')} className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white transition hover:border-lime-300/50 hover:text-lime-300">
+            Hablemos
           </button>
         </div>
+
+        <button className="text-white md:hidden" onClick={() => setOpen(!open)} aria-label="Abrir menú">
+          {open ? <XIcon className="h-7 w-7" /> : <MenuIcon className="h-7 w-7" />}
+        </button>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
       <AnimatePresence>
-        {isMenuOpen && (
-          <m.div
-            className="absolute top-full left-0 right-0 bg-[#101411]/95 backdrop-blur-md md:hidden shadow-lg shadow-lime-900/40"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-          >
-            <ul className="flex flex-col items-center space-y-6 py-8">
-              {navLinks.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => handleLinkClick(link.id)}
-                    className="text-2xl font-anton text-gray-300 hover:text-lime-400 transition-colors duration-300"
-                    data-interactive="true"
-                  >
-                    {link.label}
-                  </button>
-                </li>
+        {open && (
+          <m.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="border-t border-white/10 bg-[#0b0e0c]/95 px-6 py-8 backdrop-blur-xl md:hidden">
+            <div className="mx-auto flex max-w-6xl flex-col gap-5">
+              {links.map(([id, label]) => (
+                <button key={id} onClick={() => go(id)} className="text-left text-2xl font-semibold text-white/80">{label}</button>
               ))}
-            </ul>
+            </div>
           </m.div>
         )}
       </AnimatePresence>
