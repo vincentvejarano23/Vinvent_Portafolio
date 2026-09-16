@@ -1,56 +1,46 @@
 import React from 'react';
-import Section from './Section';
+import { motion } from 'framer-motion';
 import { InstagramIcon } from './icons/InstagramIcon';
 import { WhatsappIcon } from './icons/WhatsappIcon';
-import { motion } from 'framer-motion';
 
-// HACK: Workaround for framer-motion type errors.
 const m = motion as any;
 
 const Contact: React.FC = () => {
   return (
-    <Section 
-      className="relative bg-cover bg-center bg-no-repeat" 
-      style={{ backgroundImage: "url('https://i.pinimg.com/1200x/6d/aa/8a/6daa8a4adcf4b59003ce496879797a40.jpg')" }}
-    >
-      <div className="absolute inset-0 bg-black/70" aria-hidden="true"></div>
-      
-      <m.div 
-        className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto"
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <h2 className="font-anton text-4xl md:text-5xl text-white mb-8">CONTACTO</h2>
+    <div className="border-t border-white/10 bg-[#0e120f] px-6 py-24 md:py-32">
+      <m.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="mx-auto max-w-6xl">
+        <div className="grid gap-12 md:grid-cols-[.8fr_1.2fr]">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.26em] text-lime-300">Contacto</p>
+            <h2 className="mt-4 text-5xl font-black tracking-tight text-white md:text-7xl">¿Construimos algo?</h2>
+            <p className="mt-6 max-w-md text-lg leading-8 text-white/50">
+              Si tienes una idea, un producto que mejorar o un proyecto que necesita una identidad más clara, podemos conversar.
+            </p>
 
-        <div className="w-full h-[550px] border border-lime-500/20 rounded-2xl p-2 bg-[#101411]/70 backdrop-blur-sm shadow-2xl shadow-lime-900/30">
-           <iframe
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="https://wa.me/51943515738" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-5 py-3 font-bold text-black transition hover:bg-lime-200">
+                <WhatsappIcon className="h-5 w-5" /> WhatsApp
+              </a>
+              <a href="https://www.instagram.com/vincentvaf/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 font-semibold text-white transition hover:border-white/30 hover:bg-white/5">
+                <InstagramIcon className="h-5 w-5" /> Instagram
+              </a>
+            </div>
+          </div>
+
+          <div className="min-h-[520px] overflow-hidden rounded-3xl border border-white/10 bg-[#111612] p-2 shadow-2xl shadow-black/20">
+            <iframe
               src="https://clever-bowl-1a1.notion.site/ebd/24f51b6a62b880cfab08df59e431fa51"
               width="100%"
               height="100%"
               frameBorder="0"
               allowFullScreen
-              title="Formulario de Contacto de Notion"
-              className="rounded-xl"
-            ></iframe>
-        </div>
-
-        <div className="mt-8 flex flex-col sm:flex-row items-center gap-6">
-          <p className="font-semibold text-white">O encuéntrame en:</p>
-          <div className="flex gap-4">
-            <a href="https://www.instagram.com/vincentvaf/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-800 hover:bg-lime-900/80 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
-                <InstagramIcon className="w-5 h-5" />
-                <span>Instagram</span>
-            </a>
-            <a href="https://wa.me/51943515738" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-800 hover:bg-lime-900/80 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300">
-                <WhatsappIcon className="w-5 h-5" />
-                <span>WhatsApp</span>
-            </a>
+              title="Formulario de contacto"
+              className="min-h-[500px] rounded-[20px]"
+            />
           </div>
         </div>
       </m.div>
-    </Section>
+    </div>
   );
 };
 
